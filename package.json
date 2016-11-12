@@ -18,7 +18,7 @@
     "hmr",
     "live",
     "edit",
-    "webpack", 
+    "webpack",
     "reddit"
   ],
   "author": "Alexander (Lex) Pantelides, alex.pantelides@gmail.com, apantelides (Github)",
@@ -39,7 +39,9 @@
     "webpack-hot-middleware": "^2.10.0"
   },
   "dependencies": {
+    "axios": "^0.15.2",
     "react": "^0.14.6",
+    "react-bootstrap": "^0.30.6",
     "react-dom": "^0.14.6"
   }
 }
