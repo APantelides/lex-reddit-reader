@@ -11,7 +11,6 @@ export default class Entry extends Component {
 
   render () {
     const context = this;
-    console.log(context.props)
     const thumbnail = context.props.data.data.thumbnail !== 'self' ? <td><Button bsSize="xsmall" onClick={()=>{context.setState({open: !context.state.open})}}><Glyphicon glyph="picture" /> Preview</Button><Panel collapsible expanded={context.state.open}><img src={context.props.data.data.thumbnail} /></Panel></td> : <td></td>;
     return (
       <tr>
