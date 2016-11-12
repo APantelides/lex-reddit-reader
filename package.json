@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gaearon/react-hot-boilerplate.git"
+    "url": "https://github.com/APantelides/lex-reddit-reader.git"
   },
   "keywords": [
     "react",
@@ -18,14 +18,11 @@
     "hmr",
     "live",
     "edit",
-    "webpack"
+    "webpack", 
+    "reddit"
   ],
-  "author": "Dan Abramov <dan.abramov@me.com> (http://github.com/gaearon)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/gaearon/react-hot-boilerplate/issues"
-  },
-  "homepage": "https://github.com/gaearon/react-hot-boilerplate",
+  "author": "Alexander (Lex) Pantelides, alex.pantelides@gmail.com, apantelides (Github)",
+  "license": "GNU General Public License",
   "devDependencies": {
     "babel-core": "^6.0.20",
     "babel-eslint": "^4.1.3",
