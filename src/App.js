@@ -49,7 +49,7 @@ export default class App extends Component {
               <th>Title</th>
               <th></th>
               <th></th>
-              <th>Preview</th>
+              <th></th>
               <th>Author</th>
             </tr>
           </thead>
