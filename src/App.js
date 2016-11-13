@@ -8,9 +8,11 @@ export default class App extends Component {
   constructor() {
     super();
     this.state = {
-      data: [],
+      dataHot: [],
+      dataTop: [],
       sources: ['FrontPage'],
-      inputVal: null
+      inputVal: null,
+      sortByHot: false
     }
     this.addSource = this.addSource.bind(this);
     this.removeSource = this.removeSource.bind(this);
@@ -27,6 +29,8 @@ export default class App extends Component {
   addSource(source) {
     if(this.state.sources.indexOf(source) > 0) {
       return;
+    } else if (source.toUpperCase() === 'all'.toUpperCase()) {
+      alert('The all subreddit is not allowed!');
     } else {
       this.setState({
         sources: this.state.sources.concat(source)
@@ -40,13 +44,20 @@ export default class App extends Component {
       return;
     } else if(this.state.sources.indexOf(source) === 0) {
       this.setState({sources: this.state.sources.slice(1),
-      data: this.state.data.filter((data)=>{
+      dataHot: this.state.dataHot.filter((data)=>{
           return data.data.subreddit.toUpperCase() !== source.toUpperCase()
-        })})
+        }),
+      dataTop: this.state.dataTop.filter((data)=>{
+            return data.data.subreddit.toUpperCase() !== source.toUpperCase()
+          })})
+      
     } else {
       this.setState({
         sources: this.state.sources.splice(this.state.sources.indexOf(source), 1),
-        data: this.state.data.filter((data)=>{
+        dataHot: this.state.dataHot.filter((data)=>{
+          return data.data.subreddit !== source
+        }),
+        dataTop: this.state.dataTop.filter((data)=>{
           return data.data.subreddit !== source
         })
       })
@@ -57,11 +68,24 @@ export default class App extends Component {
   fetchEntries(source) {
     const context = this;
     
-    axios.get('https://www.reddit.com/r/' + source + '.json')
+    axios.get('https://www.reddit.com/r/' + source + '/top.json')
     .then((response) => {
       console.log(response.data.data.children)
       context.setState({
-        data: context.state.data.concat(response.data.data.children).sort((a, b) => {
+        dataTop: context.state.dataTop.concat(response.data.data.children).sort((a, b) => {
+          return a.data.score > b.data.score;
+        })
+      })
+
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+    axios.get('https://www.reddit.com/r/' + source + '/hot.json')
+    .then((response) => {
+      console.log(response.data.data.children)
+      context.setState({
+        dataHot: context.state.dataHot.concat(response.data.data.children).sort((a, b) => {
           console.log(a, b)
           return a.data.score > b.data.score;
         })
@@ -79,16 +103,30 @@ export default class App extends Component {
 
   render() {
     const context = this;
-    var list;
+    var subredditList, data;
     if(context.state.sources.length > 0) {
-      list = context.state.sources.map((source, index) => {
+      subredditList = context.state.sources.map((source, index) => {
         return (
           <ListGroupItem key={index}><Button onClick={()=>{this.removeSource(source)}}><Glyphicon glyph="remove" /></Button>{' ' + source}</ListGroupItem>
         )
       }) 
     } else {
-      list = <ListGroupItem>No subreddits selected</ListGroupItem>
+      subredditList = <ListGroupItem>No subreddits selected</ListGroupItem>
     }
+    if(context.state.sortByHot) {
+      data = context.state.dataHot.map((data, index) => {
+        return (
+          <Entry data={data} key={index} index={index} />
+        );
+      })
+    } else {
+      data = context.state.dataTop.map((data, index) => {
+        return (
+          <Entry data={data} key={index} index={index} />
+        );
+      })
+    }
+
     const styles = {
       jumbotron: {
         textAlign: 'center'  
@@ -113,12 +151,9 @@ export default class App extends Component {
               </FormGroup>
               {' '}
               <Button onClick={()=>{context.addSource(context.state.inputVal)}} >Add</Button>
-              <div> Note: Additional entries show up at the bottom of the page. Sorting functionality to be implemented </div>
-              <ListGroup>
+               {' Sort by:   '} <Button onClick={()=>{context.setState({sortByHot: !context.state.sortByHot})}}> {context.state.sortByHot === true ? 'Top' : 'Hot'} </Button>              <ListGroup>
                 <ListGroupItem><h4>Subreddits</h4></ListGroupItem>
-                {
-                  list
-                }
+                {subredditList}
               </ListGroup>
             </Form>
           </Well>
@@ -127,7 +162,6 @@ export default class App extends Component {
         <Table responsive>
           <thead>
             <tr>
-              <th>#</th>
               <th>Subreddit</th>
               <th>Title</th>
               <th></th>
@@ -138,11 +172,7 @@ export default class App extends Component {
           </thead>
           <tbody>
         {
-          context.state.data.map((data, index) => {
-            return (
-              <Entry data={data} key={index} index={index} />
-            );
-          })
+          data
         }
           </tbody>
         </Table>
