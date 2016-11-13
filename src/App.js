@@ -73,7 +73,7 @@ export default class App extends Component {
       console.log(response.data.data.children)
       context.setState({
         dataTop: context.state.dataTop.concat(response.data.data.children).sort((a, b) => {
-          return a.data.score > b.data.score;
+          return b.data.score - a.data.score;
         })
       })
 
@@ -87,7 +87,7 @@ export default class App extends Component {
       context.setState({
         dataHot: context.state.dataHot.concat(response.data.data.children).sort((a, b) => {
           console.log(a, b)
-          return a.data.score > b.data.score;
+          return b.data.score - a.data.score;
         })
       })
 
@@ -162,6 +162,7 @@ export default class App extends Component {
         <Table responsive>
           <thead>
             <tr>
+              <th>Score</th>
               <th>Subreddit</th>
               <th>Title</th>
               <th></th>
