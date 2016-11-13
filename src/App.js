@@ -39,9 +39,9 @@ export default class App extends Component {
     if(this.state.sources.indexOf(source) < 0) {
       return;
     } else if(this.state.sources.indexOf(source) === 0) {
-      this.setState({sources: [],
+      this.setState({sources: this.state.sources.slice(1),
       data: this.state.data.filter((data)=>{
-          return data.data.subreddit !== source
+          return data.data.subreddit.toUpperCase() !== source.toUpperCase()
         })})
     } else {
       this.setState({
@@ -59,9 +59,14 @@ export default class App extends Component {
     
     axios.get('https://www.reddit.com/r/' + source + '.json')
     .then((response) => {
+      console.log(response.data.data.children)
       context.setState({
-        data: context.state.data.concat(response.data.data.children)
+        data: context.state.data.concat(response.data.data.children).sort((a, b) => {
+          console.log(a, b)
+          return a.data.score > b.data.score;
+        })
       })
+
     })
     .catch((error) => {
       console.log(error)
