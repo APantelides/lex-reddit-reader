@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Entry from './Entry';
 import axios from 'axios';
 
-import { Jumbotron, Table, Well, Form, FormGroup, FormControl, ControlLabel, Button }  from 'react-bootstrap';
+import { Jumbotron, Table, Well, Form, FormGroup, FormControl, ControlLabel, Button, ListGroup, ListGroupItem, Glyphicon, Col }  from 'react-bootstrap';
 
 export default class App extends Component {
   constructor() {
@@ -13,13 +13,13 @@ export default class App extends Component {
       inputVal: null
     }
     this.addSource = this.addSource.bind(this);
+    this.removeSource = this.removeSource.bind(this);
     this.updateInputValue = this.updateInputValue.bind(this);
     this.fetchEntries = this.fetchEntries.bind(this);
   }
 
   updateInputValue (val) {
     this.setState({
-      ...this.state,
       inputVal: val
     })
   }
@@ -29,12 +29,29 @@ export default class App extends Component {
       return;
     } else {
       this.setState({
-        ...this.state,
         sources: this.state.sources.concat(source)
       })
       this.fetchEntries(source);
     }
+  }
 
+  removeSource(source) {
+    if(this.state.sources.indexOf(source) < 0) {
+      return;
+    } else if(this.state.sources.indexOf(source) === 0) {
+      this.setState({sources: [],
+      data: this.state.data.filter((data)=>{
+          return data.data.subreddit !== source
+        })})
+    } else {
+      this.setState({
+        sources: this.state.sources.splice(this.state.sources.indexOf(source), 1),
+        data: this.state.data.filter((data)=>{
+          return data.data.subreddit !== source
+        })
+      })
+      console.log(this.state)
+    }
   }
 
   fetchEntries(source) {
@@ -45,7 +62,6 @@ export default class App extends Component {
       context.setState({
         data: context.state.data.concat(response.data.data.children)
       })
-      console.log(response)
     })
     .catch((error) => {
       console.log(error)
@@ -58,6 +74,16 @@ export default class App extends Component {
 
   render() {
     const context = this;
+    var list;
+    if(context.state.sources.length > 0) {
+      list = context.state.sources.map((source, index) => {
+        return (
+          <ListGroupItem key={index}><Button onClick={()=>{this.removeSource(source)}}><Glyphicon glyph="remove" /></Button>{' ' + source}</ListGroupItem>
+        )
+      }) 
+    } else {
+      list = <ListGroupItem>No subreddits selected</ListGroupItem>
+    }
     const styles = {
       jumbotron: {
         textAlign: 'center'  
@@ -82,6 +108,13 @@ export default class App extends Component {
               </FormGroup>
               {' '}
               <Button onClick={()=>{context.addSource(context.state.inputVal)}} >Add</Button>
+              <div> Note: Additional entries show up at the bottom of the page. Sorting functionality to be implemented </div>
+              <ListGroup>
+                <ListGroupItem><h4>Subreddits</h4></ListGroupItem>
+                {
+                  list
+                }
+              </ListGroup>
             </Form>
           </Well>
 
